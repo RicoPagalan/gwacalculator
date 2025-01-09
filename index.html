@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GWA Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+        }
+        h1 {
+            text-align: center;
+            color: #333333;
+        }
+        label {
+            font-size: 16px;
+            color: #555555;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            text-align: center;
+            color: #333333;
+        }
+        .subject {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        .subject input {
+            flex: 1;
+            min-width: 0;
+        }
+        .delete-btn {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .delete-btn:hover {
+            background-color: #cc0000;
+        }
+        .info-btn {
+            position: fixed;
+            bottom: 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            width: 20%;
+            padding: 10px 15px;
+            border-radius: none;
+            cursor: pointer;
+            font-size: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, background-color 0.3s;
+        }
+        .info-btn:hover {
+            background-color: #0056b3;
+            transform: scale(1.1);
+        }
+        .info-btn:hover + .info-box,
+        .info-box:hover {
+            display: block;
+        }
+        .info-box {
+            display: none;
+            position: fixed;
+            bottom: 70px;
+            background-color: #ffffff;
+            color: #333;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 15px;
+            width: 300px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GWA Calculator</h1>
+        <div id="subjects">
+            <div class="subject">
+                <input type="text" placeholder="Subject Name" class="subject-name">
+                <input type="number" placeholder="Grade (1.0 - 5.0)" step="0.01" class="subject-grade">
+                <input type="number" placeholder="Units" class="subject-units">
+                <button class="delete-btn" onclick="deleteSubject(this)">Delete</button>
+            </div>
+        </div>
+        <button onclick="addSubject()">Add Subject</button>
+        <button onclick="calculateGWA()">Calculate GWA</button>
+        <div class="result" id="result"></div>
+    </div>
+    <button class="info-btn">i</button>
+    <div class="info-box">
+        <strong>What is General Weighted Average (GWA)?</strong>
+        <p>The General Weighted Average (GWA) is a measure used in the Philippine educational system to evaluate the academic performance of a student. It is calculated by averaging grades weighted by the number of units of each subject.</p>
+        <p>Using this tool simplifies the process of calculating your GWA compared to manual computations. Just input your grades and corresponding units, and let the calculator do the rest!</p>
+    </div>
+
+    <script>
+        function addSubject() {
+            const subjectsDiv = document.getElementById('subjects');
+            const newSubject = document.createElement('div');
+            newSubject.classList.add('subject');
+            newSubject.innerHTML = `
+                <input type="text" placeholder="Subject Name" class="subject-name">
+                <input type="number" placeholder="Grade (1.0 - 5.0)" step="0.01" class="subject-grade">
+                <input type="number" placeholder="Units" class="subject-units">
+                <button class="delete-btn" onclick="deleteSubject(this)">Delete</button>
+            `;
+            subjectsDiv.appendChild(newSubject);
+        }
+
+        function deleteSubject(button) {
+            const subjectDiv = button.parentElement;
+            subjectDiv.remove();
+        }
+
+        function calculateGWA() {
+            const grades = document.querySelectorAll('.subject-grade');
+            const units = document.querySelectorAll('.subject-units');
+            let totalUnits = 0;
+            let weightedSum = 0;
+
+            for (let i = 0; i < grades.length; i++) {
+                const grade = parseFloat(grades[i].value);
+                const unit = parseFloat(units[i].value);
+
+                if (!isNaN(grade) && !isNaN(unit)) {
+                    weightedSum += grade * unit;
+                    totalUnits += unit;
+                }
+            }
+
+            const gwa = (weightedSum / totalUnits).toFixed(2);
+            const resultDiv = document.getElementById('result');
+
+            if (totalUnits > 0) {
+                resultDiv.textContent = `Your GWA is: ${gwa}`;
+            } else {
+                resultDiv.textContent = 'Please enter valid grades and units.';
+            }
+        }
+    </script>
+</body>
+</html>
